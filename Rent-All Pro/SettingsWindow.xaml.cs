@@ -6,14 +6,18 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using RentAllPro.Services;
 
 namespace RentAllPro
 {
     public partial class SettingsWindow : Window
     {
+        private readonly EmailService _emailService;
+
         public SettingsWindow()
         {
             InitializeComponent();
+            _emailService = new EmailService();
             LoadSettings();
         }
 
@@ -284,8 +288,9 @@ namespace RentAllPro
             }
         }
 
-        private void BtnSendTest_Click(object sender, RoutedEventArgs e)
+        private async void BtnSendTest_Click(object sender, RoutedEventArgs e)
         {
+            // Teszt email cím validálása
             if (string.IsNullOrWhiteSpace(txtTestEmail.Text))
             {
                 MessageBox.Show(
@@ -294,6 +299,7 @@ namespace RentAllPro
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning
                 );
+                txtTestEmail.Focus();
                 return;
             }
 
@@ -305,17 +311,70 @@ namespace RentAllPro
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning
                 );
+                txtTestEmail.Focus();
                 return;
             }
 
-            // TODO: Itt majd implementáljuk az email küldést
-            MessageBox.Show(
-                $"Teszt e-mail küldése a következő címre: {txtTestEmail.Text}\n\n" +
-                "Ez a funkció hamarosan elérhető!",
-                "Teszt e-mail",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information
-            );
+            // Gomb letiltása a küldés alatt
+            btnSendTest.IsEnabled = false;
+            btnSendTest.Content = "📧 Küldés...";
+
+            try
+            {
+                // Beállítások mentése küldés előtt (ha vannak változások)
+                if (ValidateSettings())
+                {
+                    SaveSettings();
+                }
+                else
+                {
+                    return; // Ha validációs hiba van, kilépés
+                }
+
+                // Email küldése
+                var result = await _emailService.SendTestEmailAsync(txtTestEmail.Text.Trim());
+
+                if (result.Success)
+                {
+                    MessageBox.Show(
+                        result.Message + "\n\n" +
+                        "✅ Email beállítások működnek!\n" +
+                        "💡 Ellenőrizze a spam mappát is.",
+                        "Teszt sikeres",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "❌ Email küldési hiba:\n\n" + result.ErrorMessage + "\n\n" +
+                        "💡 Ellenőrizze az SMTP beállításokat:\n" +
+                        "• SMTP szerver neve\n" +
+                        "• Port szám (általában 587 vagy 465)\n" +
+                        "• Felhasználónév és jelszó\n" +
+                        "• SSL/TLS beállítások",
+                        "Email küldési hiba",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Váratlan hiba történt:\n\n{ex.Message}",
+                    "Hiba",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+            finally
+            {
+                // Gomb visszaállítása
+                btnSendTest.IsEnabled = true;
+                btnSendTest.Content = "📧 Teszt küldés";
+            }
         }
 
         #endregion
