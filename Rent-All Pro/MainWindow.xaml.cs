@@ -194,7 +194,7 @@ namespace RentAllPro
                 // TODO: Equipment selection window
             }
         }
-        private void UpdateHeaderTitle()
+        public void UpdateHeaderTitle()
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.CompanyName))
             {

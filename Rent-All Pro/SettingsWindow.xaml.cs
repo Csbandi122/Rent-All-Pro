@@ -104,6 +104,10 @@ namespace RentAllPro
                     MessageBoxButton.OK,
                     MessageBoxImage.Information
                 );
+                if (this.Owner is MainWindow mainWindow)
+                {
+                    mainWindow.UpdateHeaderTitle();
+                }
             }
             catch (Exception ex)
             {
