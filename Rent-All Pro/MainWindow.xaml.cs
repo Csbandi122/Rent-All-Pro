@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using RentAllPro.Models;
+using RentAllPro.Windows; // ← új sor a using utasításokhoz
 
 namespace RentAllPro
 {
@@ -233,13 +234,9 @@ namespace RentAllPro
 
         private void BtnEquipmentAdmin_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "Eszköz adminisztráció funkció hamarosan elérhető!",
-                "Információ",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information
-            );
-            // TODO: Equipment administration window
+            var equipmentWindow = new EquipmentAdministrationWindow();
+            equipmentWindow.Owner = this;
+            equipmentWindow.ShowDialog();
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
