@@ -1,0 +1,47 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RentAllPro.Properties" GeneratedClassName="Settings">
+	<Profiles />
+	<Settings>
+		<!-- Cég adatok -->
+		<Setting Name="CompanyName" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="CompanyWebsite" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="GoogleReviewUrl" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+
+		<!-- Template fájlok -->
+		<Setting Name="ContractTemplatePath" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="TermsTemplatePath" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+
+		<!-- Email beállítások -->
+		<Setting Name="SmtpServer" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="SmtpPort" Type="System.Int32" Scope="User">
+			<Value Profile="(Default)">587</Value>
+		</Setting>
+		<Setting Name="SmtpUsername" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="SmtpPassword" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="SenderEmail" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="SenderName" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+		<Setting Name="AdditionalRecipients" Type="System.String" Scope="User">
+			<Value Profile="(Default)" />
+		</Setting>
+	</Settings>
+</SettingsFile>

@@ -1,0 +1,305 @@
+﻿<Window x:Class="RentAllPro.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Beállítások - Eszközbérlés támogatás" 
+        Height="700" Width="800"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Icon="Images/logo.png">
+
+    <Window.Resources>
+        <!-- Stílusok -->
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5,5,5,0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#2E86AB"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2E86AB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1E5F7A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="Foreground" Value="#2E86AB"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderBrush" Value="#2E86AB"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E9ECEF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="BrowseButton" TargetType="Button">
+            <Setter Property="Background" Value="#6C757D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5A6268"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2E86AB" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Logó -->
+                <Image Grid.Column="0" 
+                       Source="/Images/logo.png" 
+                       Height="40" 
+                       Width="40" 
+                       Margin="0,0,15,0"
+                       VerticalAlignment="Center"/>
+
+                <!-- Cím -->
+                <TextBlock Grid.Column="1" 
+                           Text="Beállítások" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Foreground="White" 
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20">
+
+                <!-- Cég adatok szekció -->
+                <GroupBox Header="🏢 Cég adatok">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0" Content="Vállalkozás neve:"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCompanyName"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Content="Vállalkozás weboldala:"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCompanyWebsite"/>
+
+                        <Label Grid.Row="2" Grid.Column="0" Content="Google review URL:"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtGoogleReviewUrl"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Template file-ok szekció -->
+                <GroupBox Header="📄 Template file-ok">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Szerződés template -->
+                        <Label Grid.Row="0" Grid.Column="0" Content="Szerződés template helye:"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                 x:Name="txtContractTemplatePath" 
+                                 IsReadOnly="True"
+                                 Background="#F8F9FA"/>
+                        <Button Grid.Row="0" Grid.Column="2" 
+                                Content="📁 Tallózás" 
+                                Style="{StaticResource BrowseButton}"
+                                Click="BtnBrowseContract_Click"/>
+
+                        <!-- ÁSZF helye -->
+                        <Label Grid.Row="1" Grid.Column="0" Content="ÁSZF helye:"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" 
+                                 x:Name="txtTermsTemplatePath" 
+                                 IsReadOnly="True"
+                                 Background="#F8F9FA"/>
+                        <Button Grid.Row="1" Grid.Column="2" 
+                                Content="📁 Tallózás" 
+                                Style="{StaticResource BrowseButton}"
+                                Click="BtnBrowseTerms_Click"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Email beállítások szekció -->
+                <GroupBox Header="📧 Email beállítások">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- SMTP szerver és port egy sorban -->
+                        <Label Grid.Row="0" Grid.Column="0" Content="SMTP szerver neve:"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                 x:Name="txtSmtpServer"/>
+
+                        <Label Grid.Row="0" Grid.Column="2" Content="Port:" Margin="15,5,5,0"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" 
+                                 x:Name="txtSmtpPort" 
+                                 PreviewTextInput="NumberValidationTextBox"
+                                 MaxLength="5"
+                                 Text="587"/>
+
+                        <!-- SMTP felhasználónév -->
+                        <Label Grid.Row="1" Grid.Column="0" Content="SMTP felhasználónév:"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                 x:Name="txtSmtpUsername"/>
+
+                        <!-- SMTP jelszó -->
+                        <Label Grid.Row="2" Grid.Column="0" Content="SMTP jelszó:"/>
+                        <PasswordBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                                     x:Name="pwdSmtpPassword"/>
+
+                        <!-- Küldő e-mail címe -->
+                        <Label Grid.Row="3" Grid.Column="0" Content="Küldő e-mail címe:"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
+                                 x:Name="txtSenderEmail"/>
+
+                        <!-- Küldő neve -->
+                        <Label Grid.Row="4" Grid.Column="0" Content="Küldő neve:"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"
+                                 x:Name="txtSenderName"/>
+
+                        <!-- Bérlőn kívüli címzettek -->
+                        <Label Grid.Row="5" Grid.Column="0" Content="Bérlőn kívüli címzettek:" VerticalAlignment="Top" Margin="5,10,5,0"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
+                                 x:Name="txtAdditionalRecipients"
+                                 Height="80"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 ToolTip="E-mail címeket vesszővel válassza el"/>
+
+                        <!-- Segítő szöveg -->
+                        <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3"
+                                   Text="💡 Több e-mail címet vesszővel válasszon el (pl: admin@ceg.hu, manager@ceg.hu)"
+                                   FontSize="10"
+                                   Foreground="Gray"
+                                   Margin="5,5,5,10"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Teszt email küldés -->
+                <GroupBox Header="🧪 Email teszt">
+                    <StackPanel>
+                        <TextBlock Text="Tesztelje az email beállításokat egy próba üzenet küldésével:"
+                   Margin="5"
+                   TextWrapping="Wrap"/>
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Teszt email címe:"/>
+                            <TextBox Grid.Column="1" x:Name="txtTestEmail" Margin="5"/>
+                            <Button Grid.Column="2" 
+                    Content="📧 Teszt küldés" 
+                    Style="{StaticResource SecondaryButton}"
+                    Click="BtnSendTest_Click"/>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer Buttons -->
+        <Border Grid.Row="2" Background="#F8F9FA" Padding="20">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="btnCancel" 
+                        Content="Mégse" 
+                        Style="{StaticResource SecondaryButton}"
+                        Click="BtnCancel_Click"/>
+                <Button x:Name="btnSave" 
+                        Content="💾 Mentés" 
+                        Style="{StaticResource PrimaryButton}"
+                        Click="BtnSave_Click"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Window>
