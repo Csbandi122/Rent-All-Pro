@@ -277,6 +277,7 @@
                             <Label Grid.Column="0" Content="Teszt email címe:"/>
                             <TextBox Grid.Column="1" x:Name="txtTestEmail" Margin="5"/>
                             <Button Grid.Column="2" 
+                                    x:Name="btnSendTest"
                     Content="📧 Teszt küldés" 
                     Style="{StaticResource SecondaryButton}"
                     Click="BtnSendTest_Click"/>
