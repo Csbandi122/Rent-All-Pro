@@ -117,13 +117,13 @@
                Margin="0,0,15,0"
                VerticalAlignment="Center"/>
 
-                <!-- Cím -->
                 <TextBlock Grid.Column="1" 
-                   Text="Eszközbérlés támogatás" 
-                   FontSize="28" 
-                   FontWeight="Bold" 
-                   Foreground="White" 
-                   VerticalAlignment="Center"/>
+           x:Name="txtHeaderTitle"
+           Text="Eszközbérlés támogatás" 
+           FontSize="28" 
+           FontWeight="Bold" 
+           Foreground="White" 
+           VerticalAlignment="Center"/>
 
                 <!-- Beállítások gomb (fogaskerék) -->
                 <Button Grid.Column="2" 

@@ -29,6 +29,7 @@ namespace RentAllPro
             _currentRental.StartDate = DateTime.Today;
 
             CalculateExpectedReturnDate();
+            UpdateHeaderTitle(); // <-- Add ezt hozzá
         }
 
         #region Validáció és számítások
@@ -193,7 +194,17 @@ namespace RentAllPro
                 // TODO: Equipment selection window
             }
         }
-
+        private void UpdateHeaderTitle()
+        {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.CompanyName))
+            {
+                txtHeaderTitle.Text = Properties.Settings.Default.CompanyName;
+            }
+            else
+            {
+                txtHeaderTitle.Text = "Eszközbérlés támogatás";
+            }
+        }
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(
