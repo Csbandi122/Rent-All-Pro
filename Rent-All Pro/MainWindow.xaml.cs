@@ -191,15 +191,25 @@ namespace RentAllPro
                     // Eszközök sikeresen kiválasztva
                     var selectedEquipments = equipmentSelectionWindow.SelectedEquipments;
 
-                    MessageBox.Show(
-                        $"Eszközök sikeresen kiválasztva!\n\n" +
-                        $"Kiválasztott eszközök: {selectedEquipments.Count} db\n" +
-                        $"Végösszeg: {_currentRental.TotalAmount:N0} Ft\n\n" +
-                        $"Következő lépés: bérlés véglegesítése",
-                        "Eszköz kiválasztás kész",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                    );
+                    // Bérlés véglegesítő ablak megnyitása
+                    var confirmationWindow = new RentalConfirmationWindow(_currentCustomer, _currentRental, selectedEquipments);
+                    confirmationWindow.Owner = this;
+
+                    var confirmationResult = confirmationWindow.ShowDialog();
+
+                    if (confirmationResult == true)
+                    {
+                        // Bérlés sikeresen véglegesítve
+                        MessageBox.Show(
+                            "Bérlés sikeresen véglegesítve!\n\nKöszönjük a bizalmát!",
+                            "Sikeres bérlés",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information
+                        );
+
+                        // Form visszaállítása új bérléshez
+                        InitializeData();
+                    }
 
                     // TODO: Itt folytatódik a bérlés véglegesítése
                 }
