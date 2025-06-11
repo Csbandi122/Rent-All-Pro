@@ -7,7 +7,7 @@
         public int EquipmentId { get; set; }
 
         // Navigation properties
-        public Rental Rental { get; set; }
-        public Equipment Equipment { get; set; }
+        public Rental Rental { get; set; } = new Rental();
+        public Equipment Equipment { get; set; } = new Equipment();
     }
 }

@@ -71,6 +71,21 @@ namespace RentAllPro.Data
                 // Egyedi index az eszköz kódra
                 entity.HasIndex(e => e.Code).IsUnique();
             });
+            // RentalEquipment tábla beállításai
+            modelBuilder.Entity<RentalEquipment>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.Rental)
+                      .WithMany()
+                      .HasForeignKey(e => e.RentalId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Equipment)
+                      .WithMany()
+                      .HasForeignKey(e => e.EquipmentId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
