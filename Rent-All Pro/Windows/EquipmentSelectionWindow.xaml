@@ -217,36 +217,47 @@
                 <!-- Kiválasztott eszközök összesítése -->
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock x:Name="txtSelectedCount"
-                               Text="Kiválasztott eszközök: 0 db" 
-                               FontSize="14" 
-                               FontWeight="Bold"/>
+                       Text="Kiválasztott eszközök: 0 db" 
+                       FontSize="14" 
+                       FontWeight="Bold"/>
                     <TextBlock x:Name="txtTotalAmount"
-                               Text="Összesen: 0 Ft" 
-                               FontSize="16" 
-                               FontWeight="Bold"
-                               Foreground="#2E86AB"/>
+                       Text="Összesen: 0 Ft" 
+                       FontSize="16" 
+                       FontWeight="Bold"
+                       Foreground="#2E86AB"/>
                 </StackPanel>
 
-                <!-- Gombok -->
+                <!-- Vissza gomb -->
                 <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal" 
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center">
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
                     <Button x:Name="btnBack" 
-                            Content="◀ Vissza az ügyféladatokhoz" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="BtnBack_Click"/>
+                    Content="◀ Vissza az ügyféladatokhoz" 
+                    Style="{StaticResource SecondaryButton}"
+                    Click="BtnBack_Click"/>
                 </StackPanel>
 
+                <!-- Fő műveleti gombok -->
                 <StackPanel Grid.Column="2" 
-                            Orientation="Horizontal" 
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center">
-                    <Button x:Name="btnContinue" 
-                            Content="Tovább a véglegesítéshez ▶" 
-                            Style="{StaticResource PrimaryButton}"
-                            Click="BtnContinue_Click"
-                            IsEnabled="False"/>
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <Button x:Name="btnFinalize" 
+                    Content="💾 Bérlés véglegesítése" 
+                    Style="{StaticResource PrimaryButton}"
+                    Click="BtnFinalize_Click"
+                    IsEnabled="False"/>
+                    <Button x:Name="btnSendContract" 
+                    Content="📧 Szerződés küldése" 
+                    Style="{StaticResource SecondaryButton}"
+                    Click="BtnSendContract_Click"
+                    IsEnabled="False"/>
+                    <Button x:Name="btnSendInvoice" 
+                    Content="🧾 Számla küldése" 
+                    Style="{StaticResource SecondaryButton}"
+                    Click="BtnSendInvoice_Click"
+                    IsEnabled="False"/>
                 </StackPanel>
             </Grid>
         </Border>

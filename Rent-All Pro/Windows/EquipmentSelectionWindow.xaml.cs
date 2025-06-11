@@ -1,15 +1,18 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using RentAllPro.Data;
+using RentAllPro.Helpers;
+using RentAllPro.Models;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.IO;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.EntityFrameworkCore;
-using RentAllPro.Models;
-using RentAllPro.Data;
-using RentAllPro.Helpers;
 
 namespace RentAllPro.Windows
 {
@@ -381,7 +384,7 @@ namespace RentAllPro.Windows
             txtTotalAmount.Text = $"Összesen: {totalAmount:N0} Ft";
 
             // Tovább gomb engedélyezése/letiltása
-            btnContinue.IsEnabled = selectedCount > 0;
+            btnFinalize.IsEnabled = selectedCount > 0;
         }
 
         #endregion
@@ -430,8 +433,10 @@ namespace RentAllPro.Windows
             this.DialogResult = false;
             this.Close();
         }
+        #endregion
+        #region Véglegesítés és dokumentum kezelés
 
-        private void BtnContinue_Click(object sender, RoutedEventArgs e)
+        private async void BtnFinalize_Click(object sender, RoutedEventArgs e)
         {
             if (_selectedEquipments.Count == 0)
             {
@@ -444,12 +449,135 @@ namespace RentAllPro.Windows
                 return;
             }
 
-            // Összeg beállítása a rental objektumban
+            // Összeg beállítása
             _rental.TotalAmount = _selectedEquipments.Sum(e => e.DailyRate * _rental.RentalDays);
 
-            this.DialogResult = true;
-            this.Close();
+            // Megerősítő üzenet
+            var result = MessageBox.Show(
+                "Biztosan véglegesíti a bérlést?\n\n" +
+                $"Ügyfél: {_customer.FullName}\n" +
+                $"Bérlési időszak: {_rental.StartDate:yyyy.MM.dd} - {_rental.ExpectedReturnDate:yyyy.MM.dd}\n" +
+                $"Eszközök: {_selectedEquipments.Count} db\n" +
+                $"Végösszeg: {_rental.TotalAmount:N0} Ft\n\n" +
+                "Ez a művelet nem vonható vissza!",
+                "Bérlés véglegesítése",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                btnFinalize.IsEnabled = false;
+                btnFinalize.Content = "💾 Véglegesítés...";
+
+                // 1. Adatbázisba mentés
+                await SaveRentalToDatabase();
+
+                // 2. Word szerződés generálása és megnyitása
+                await GenerateAndOpenContract();
+
+                // 3. Szerződés küldése gomb aktiválása
+                btnSendContract.IsEnabled = true;
+
+                MessageBox.Show(
+                    "Bérlés sikeresen véglegesítve!\n\n" +
+                    "A szerződés meg lett nyitva aláírásra.",
+                    "Sikeres véglegesítés",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Hiba a véglegesítés során:\n{ex.Message}",
+                    "Hiba",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+                btnFinalize.IsEnabled = true;
+                btnFinalize.Content = "💾 Bérlés véglegesítése";
+            }
         }
+
+        private void BtnSendContract_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(
+                "Szerződés küldése funkció hamarosan elérhető!",
+                "Információ",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
+        }
+
+        private void BtnSendInvoice_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(
+                "Számla küldése funkció hamarosan elérhető!",
+                "Információ",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
+        }
+
+        // TODO: Ezeket a metódusokat még implementálni kell
+        private async Task SaveRentalToDatabase()
+        {
+            // Itt lesz az adatbázis mentés logika
+            await Task.Delay(1000); // Placeholder
+        }
+
+        private async Task GenerateAndOpenContract()
+        {
+            try
+            {
+                // 1. PdfService importálása (már létező szolgáltatás)
+                var pdfService = new RentAllPro.Services.PdfService();
+
+                // 2. Fájl útvonalak előkészítése
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var customerNameSafe = _customer.FullName.Replace(" ", "_").Replace(".", "");
+
+                // Temp Word a Windows TEMP mappában
+                var tempFolder = Path.Combine(Path.GetTempPath(), "RentAllPro");
+                Directory.CreateDirectory(tempFolder);
+                var tempWordPath = Path.Combine(tempFolder, $"szerződés_temp_{timestamp}.docx");
+
+                // 3. Word dokumentum generálása
+                var result = await pdfService.GenerateContractPdfAsync(_customer, _rental, _selectedEquipments, tempWordPath);
+
+                if (result.Success)
+                {
+                    // 4. Word megnyitása
+                    var startInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = result.WordFilePath,
+                        UseShellExecute = true
+                    };
+                    System.Diagnostics.Process.Start(startInfo);
+
+                    MessageBox.Show(
+                        "Word szerződés sikeresen generálva és megnyitva!\n\n" +
+                        "A dokumentum aláírásra készen áll.",
+                        "Szerződés megnyitva",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                }
+                else
+                {
+                    throw new Exception(result.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Hiba a Word szerződés generálása során: {ex.Message}");
+            }
+        }
+
 
         #endregion
     }
