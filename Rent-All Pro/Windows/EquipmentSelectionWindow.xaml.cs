@@ -534,6 +534,18 @@ namespace RentAllPro.Windows
                 _rental.CustomerId = _customer.Id;
                 context.Rentals.Add(_rental);
                 await context.SaveChangesAsync();
+
+                // ✅ ÚJ: A kiválasztott eszközök és bérlés közötti kapcsolatok mentése
+                foreach (var equipment in _selectedEquipments)
+                {
+                    var rentalEquipment = new RentalEquipment
+                    {
+                        RentalId = _rental.Id,
+                        EquipmentId = equipment.Id
+                    };
+                    context.RentalEquipments.Add(rentalEquipment);
+                }
+                await context.SaveChangesAsync();
             }
         }
 
