@@ -1,0 +1,254 @@
+﻿<Window x:Class="RentAllPro.Windows.EquipmentSelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:RentAllPro.Converters"
+        Title="Eszköz kiválasztás - Eszközbérlés támogatás" 
+        Height="800" Width="1000"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Icon="../Images/logo.png">
+
+    <Window.Resources>
+        <!-- Converter hozzáadása -->
+        <converters:BoolToYesNoConverter x:Key="BoolToYesNoConverter"/>
+
+        <!-- Stílusok -->
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5,5,5,0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#2E86AB"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2E86AB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1E5F7A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="Foreground" Value="#2E86AB"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderBrush" Value="#2E86AB"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E9ECEF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Eszköz kártya stílus -->
+        <Style x:Key="EquipmentCard" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#2E86AB"/>
+                    <Setter Property="Background" Value="#F8F9FA"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Kiválasztott eszköz kártya stílus -->
+        <Style x:Key="SelectedEquipmentCard" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#28A745"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Background" Value="#D4EDDA"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#1E7E34"/>
+                    <Setter Property="Background" Value="#C3E6CB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2E86AB" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Logó -->
+                <Image Grid.Column="0" 
+                       Source="/Images/logo.png" 
+                       Height="40" 
+                       Width="40" 
+                       Margin="0,0,15,0"
+                       VerticalAlignment="Center"/>
+
+                <!-- Cím -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="Eszköz kiválasztás" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Foreground="White"/>
+                    <TextBlock x:Name="txtCustomerInfo"
+                               Text="Ügyfél: Loading..." 
+                               FontSize="14" 
+                               Foreground="#E9ECEF"/>
+                </StackPanel>
+
+                <!-- Bérlési napok info -->
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock x:Name="txtRentalDaysInfo"
+                               Text="Bérlési napok: 0" 
+                               FontSize="14" 
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Right"/>
+                    <TextBlock x:Name="txtDateInfo"
+                               Text="2025.01.01 - 2025.01.01" 
+                               FontSize="12" 
+                               Foreground="#E9ECEF"
+                               HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Keresés és szűrés -->
+        <Grid Grid.Row="1" Margin="20,15,20,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Keresés -->
+            <TextBox Grid.Column="0" 
+                     x:Name="txtSearch" 
+                     Height="35"
+                     TextChanged="TxtSearch_TextChanged"
+                     FontStyle="Italic"
+                     Text="Keresés eszköz név, típus vagy kód alapján..."/>
+
+            <!-- Típus szűrő -->
+            <ComboBox Grid.Column="1" 
+                      x:Name="cmbTypeFilter"
+                      Height="35"
+                      Margin="10,0,0,0"
+                      SelectionChanged="CmbTypeFilter_SelectionChanged">
+                <ComboBoxItem Content="Minden típus" IsSelected="True"/>
+            </ComboBox>
+
+            <!-- Csak elérhető eszközök checkbox -->
+            <CheckBox Grid.Column="2" 
+                      x:Name="chkOnlyAvailable"
+                      Content="Csak elérhető eszközök"
+                      VerticalAlignment="Center"
+                      Margin="10,0,0,0"
+                      IsChecked="True"
+                      Checked="ChkOnlyAvailable_CheckedChanged"
+                      Unchecked="ChkOnlyAvailable_CheckedChanged"/>
+        </Grid>
+
+        <!-- Eszközök megjelenítése -->
+        <ScrollViewer Grid.Row="2" 
+                      VerticalScrollBarVisibility="Auto"
+                      Margin="20,15,20,0">
+            <WrapPanel x:Name="pnlEquipments" 
+                       Orientation="Horizontal"
+                       ItemWidth="280"
+                       ItemHeight="320"/>
+        </ScrollViewer>
+
+        <!-- Footer - Összesítés és gombok -->
+        <Border Grid.Row="3" Background="#F8F9FA" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Kiválasztott eszközök összesítése -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock x:Name="txtSelectedCount"
+                               Text="Kiválasztott eszközök: 0 db" 
+                               FontSize="14" 
+                               FontWeight="Bold"/>
+                    <TextBlock x:Name="txtTotalAmount"
+                               Text="Összesen: 0 Ft" 
+                               FontSize="16" 
+                               FontWeight="Bold"
+                               Foreground="#2E86AB"/>
+                </StackPanel>
+
+                <!-- Gombok -->
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button x:Name="btnBack" 
+                            Content="◀ Vissza az ügyféladatokhoz" 
+                            Style="{StaticResource SecondaryButton}"
+                            Click="BtnBack_Click"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button x:Name="btnContinue" 
+                            Content="Tovább a véglegesítéshez ▶" 
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnContinue_Click"
+                            IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -6,8 +6,7 @@
         Height="800" Width="1200"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
-        Icon="../
-Images/logo.png">
+        Icon="../Images/logo.png">
 
     <Window.Resources>
         <!-- Converter hozzáadása -->

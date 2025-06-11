@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using RentAllPro.Models;
 using RentAllPro.Windows; // ← új sor a using utasításokhoz
+using RentAllPro.Windows;
 
 namespace RentAllPro
 {
@@ -179,20 +180,29 @@ namespace RentAllPro
                 CollectCustomerData();
                 CollectRentalData();
 
-                MessageBox.Show(
-                    $"Adatok sikeresen rögzítve!\n\n" +
-                    $"Ügyfél: {_currentCustomer.FullName}\n" +
-                    $"Bérlési napok: {_currentRental.RentalDays}\n" +
-                    $"Fizetési mód: {_currentRental.PaymentMethod}\n" +
-                    $"Várható visszavétel: {_currentRental.ExpectedReturnDate:yyyy.MM.dd}\n\n" +
-                    $"Következő lépés: eszköz kiválasztás",
-                    "Információ",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information
-                );
+                // Eszköz kiválasztó ablak megnyitása
+                var equipmentSelectionWindow = new EquipmentSelectionWindow(_currentCustomer, _currentRental);
+                equipmentSelectionWindow.Owner = this;
 
-                // Itt majd átmegyünk az eszköz kiválasztó ablakra
-                // TODO: Equipment selection window
+                var result = equipmentSelectionWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    // Eszközök sikeresen kiválasztva
+                    var selectedEquipments = equipmentSelectionWindow.SelectedEquipments;
+
+                    MessageBox.Show(
+                        $"Eszközök sikeresen kiválasztva!\n\n" +
+                        $"Kiválasztott eszközök: {selectedEquipments.Count} db\n" +
+                        $"Végösszeg: {_currentRental.TotalAmount:N0} Ft\n\n" +
+                        $"Következő lépés: bérlés véglegesítése",
+                        "Eszköz kiválasztás kész",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+
+                    // TODO: Itt folytatódik a bérlés véglegesítése
+                }
             }
         }
         public void UpdateHeaderTitle()
