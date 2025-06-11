@@ -196,7 +196,7 @@ namespace RentAllPro
                     );
 
                     // Form visszaállítása új bérléshez
-                    InitializeData();
+                    //InitializeData();
                 }
             }
         }

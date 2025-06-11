@@ -1,12 +1,12 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using RentAllPro.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
+using RentAllPro.Models;
 
 namespace RentAllPro.Services
 {

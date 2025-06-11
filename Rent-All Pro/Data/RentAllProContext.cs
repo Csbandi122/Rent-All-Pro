@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using RentAllPro.Models;
-using System;
 using System.IO;
 
 namespace RentAllPro.Data

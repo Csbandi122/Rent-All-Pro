@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
-using RentAllPro.Data;
-using RentAllPro.Helpers;
-using RentAllPro.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,6 +6,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using Microsoft.Win32;
+using RentAllPro.Models;
+using RentAllPro.Helpers;
+using RentAllPro.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace RentAllPro.Windows
 {
@@ -20,6 +21,10 @@ namespace RentAllPro.Windows
         private Equipment _currentEquipment;
         private bool _isEditMode;
         private string _originalImagePath;
+
+        // Új változók az új funkciókhoz
+        private List<Customer> _allCustomers;
+        private List<Rental> _allRentals;
 
         public EquipmentAdministrationWindow()
         {
@@ -36,8 +41,12 @@ namespace RentAllPro.Windows
                 // Inicializálás
                 _allEquipments = new List<Equipment>();
                 _currentEquipment = new Equipment();
+                _allCustomers = new List<Customer>();
+                _allRentals = new List<Rental>();
 
                 await LoadEquipments();
+                await LoadCustomers();
+                await LoadRentals();
                 ClearForm();
 
                 // Event handler-ek hozzáadása, ha a vezérlők léteznek
@@ -80,7 +89,6 @@ namespace RentAllPro.Windows
 
         private void FilterAndDisplayEquipments()
         {
-            // Null check hozzáadása
             if (_allEquipments == null)
             {
                 _allEquipments = new List<Equipment>();
@@ -88,7 +96,6 @@ namespace RentAllPro.Windows
 
             var filteredEquipments = _allEquipments;
 
-            // Keresési szűrő alkalmazása
             if (!string.IsNullOrWhiteSpace(txtSearch?.Text) &&
                 txtSearch.Text != "Keresés eszköz név vagy kód alapján...")
             {
@@ -100,7 +107,6 @@ namespace RentAllPro.Windows
                 ).ToList();
             }
 
-            // ListView null check
             if (lstEquipments != null)
             {
                 lstEquipments.ItemsSource = filteredEquipments;
@@ -118,7 +124,7 @@ namespace RentAllPro.Windows
 
         private void TxtSearch_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (txtSearch != null && txtSearch.Text == "Keresés eszköz név vagy kód alapján...")
+            if (txtSearch?.Text == "Keresés eszköz név vagy kód alapján...")
             {
                 txtSearch.Text = "";
                 txtSearch.FontStyle = FontStyles.Normal;
@@ -254,7 +260,6 @@ namespace RentAllPro.Windows
 
         private void DecimalValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            // Decimális számok és vessző/pont engedélyezése
             Regex regex = new Regex("[^0-9.,]+");
             e.Handled = regex.IsMatch(e.Text);
         }
@@ -263,7 +268,6 @@ namespace RentAllPro.Windows
         {
             var errors = new List<string>();
 
-            // Kötelező mezők ellenőrzése - null ellenőrzésekkel
             if (txtType == null || string.IsNullOrWhiteSpace(txtType.Text))
                 errors.Add("• Eszköz típusa kötelező");
 
@@ -273,7 +277,6 @@ namespace RentAllPro.Windows
             if (txtCode == null || string.IsNullOrWhiteSpace(txtCode.Text))
                 errors.Add("• Eszköz kódja kötelező");
 
-            // Eszköz kód egyediségének ellenőrzése
             if (txtCode != null && !string.IsNullOrWhiteSpace(txtCode.Text) && _allEquipments != null)
             {
                 var codeExists = _allEquipments.Any(e =>
@@ -284,7 +287,6 @@ namespace RentAllPro.Windows
                     errors.Add("• Ez az eszköz kód már létezik");
             }
 
-            // Pénzügyi adatok ellenőrzése
             if (txtValue == null || !decimal.TryParse(txtValue.Text.Replace(',', '.'), out decimal value) || value <= 0)
                 errors.Add("• Eszköz értéke érvényes pozitív szám kell legyen");
 
@@ -322,7 +324,6 @@ namespace RentAllPro.Windows
 
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    // Kép előnézet betöltése az eredeti fájlból
                     var bitmap = ImageHelper.LoadImageForDisplay(openFileDialog.FileName);
                     if (bitmap != null)
                     {
@@ -394,7 +395,6 @@ namespace RentAllPro.Windows
                             var equipmentToDelete = await context.Equipments.FindAsync(selectedEquipment.Id);
                             if (equipmentToDelete != null)
                             {
-                                // Kép törlése a fájlrendszerből - null ellenőrzéssel és hibakezeléssel
                                 if (!string.IsNullOrEmpty(equipmentToDelete.ImagePath))
                                 {
                                     try
@@ -412,24 +412,13 @@ namespace RentAllPro.Windows
                             }
                         }
 
-                        MessageBox.Show(
-                            "Eszköz sikeresen törölve!",
-                            "Siker",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information
-                        );
-
+                        MessageBox.Show("Eszköz sikeresen törölve!", "Siker");
                         await LoadEquipments();
                         ClearForm();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(
-                            $"Hiba az eszköz törlése során:\n{ex.Message}",
-                            "Hiba",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error
-                        );
+                        MessageBox.Show($"Hiba az eszköz törlése során:\n{ex.Message}", "Hiba");
                     }
                 }
             }
@@ -442,13 +431,11 @@ namespace RentAllPro.Windows
 
             try
             {
-                // Form adatok összegyűjtése
                 var equipment = _isEditMode ? _currentEquipment : new Equipment();
 
                 if (equipment == null)
                     equipment = new Equipment();
 
-                // Null ellenőrzések a form mezőknél
                 equipment.Type = txtType?.Text.Trim() ?? "";
                 equipment.Name = txtName?.Text.Trim() ?? "";
                 equipment.Code = txtCode?.Text.Trim() ?? "";
@@ -457,14 +444,11 @@ namespace RentAllPro.Windows
                 equipment.Notes = txtNotes?.Text.Trim() ?? "";
                 equipment.IsAvailable = chkIsAvailable?.IsChecked ?? true;
 
-                // Kép kezelése
                 var currentImagePath = txtImagePath?.Text ?? "";
                 if (!string.IsNullOrEmpty(currentImagePath) && currentImagePath != _originalImagePath)
                 {
-                    // Új kép mentése
                     var savedImagePath = ImageHelper.SaveEquipmentImage(currentImagePath, equipment.Code);
 
-                    // Régi kép törlése (ha volt és szerkesztés módban vagyunk)
                     if (_isEditMode && !string.IsNullOrEmpty(_originalImagePath))
                     {
                         try
@@ -481,7 +465,6 @@ namespace RentAllPro.Windows
                 }
                 else if (string.IsNullOrEmpty(currentImagePath) && _isEditMode && !string.IsNullOrEmpty(_originalImagePath))
                 {
-                    // Kép eltávolítása
                     try
                     {
                         ImageHelper.DeleteEquipmentImage(_originalImagePath);
@@ -493,7 +476,6 @@ namespace RentAllPro.Windows
                     equipment.ImagePath = null;
                 }
 
-                // Adatbázisba mentés
                 using (var context = new RentAllProContext())
                 {
                     if (_isEditMode)
@@ -511,9 +493,7 @@ namespace RentAllPro.Windows
 
                 MessageBox.Show(
                     $"Eszköz sikeresen {(_isEditMode ? "frissítve" : "hozzáadva")}!",
-                    "Siker",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information
+                    "Siker"
                 );
 
                 await LoadEquipments();
@@ -521,18 +501,389 @@ namespace RentAllPro.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Hiba az eszköz mentése során:\n{ex.Message}",
-                    "Hiba",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                MessageBox.Show($"Hiba az eszköz mentése során:\n{ex.Message}", "Hiba");
             }
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        #endregion
+
+        #region Ügyfelek kezelése
+
+        private async Task LoadCustomers()
+        {
+            try
+            {
+                using (var context = new RentAllProContext())
+                {
+                    _allCustomers = await context.Customers
+                        .OrderByDescending(c => c.CreatedAt)
+                        .ToListAsync();
+                }
+                FilterAndDisplayCustomers();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba az ügyfelek betöltése során: {ex.Message}", "Hiba");
+            }
+        }
+
+        private void FilterAndDisplayCustomers()
+        {
+            var filteredCustomers = _allCustomers;
+
+            if (!string.IsNullOrWhiteSpace(txtCustomerSearch?.Text) &&
+                txtCustomerSearch.Text != "Keresés név vagy email alapján...")
+            {
+                var searchTerm = txtCustomerSearch.Text.ToLower();
+                filteredCustomers = _allCustomers.Where(c =>
+                    c.FullName.ToLower().Contains(searchTerm) ||
+                    c.Email.ToLower().Contains(searchTerm)
+                ).ToList();
+            }
+
+            if (lstCustomers != null)
+                lstCustomers.ItemsSource = filteredCustomers;
+        }
+
+        private void TxtCustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterAndDisplayCustomers();
+        }
+
+        private void LstCustomers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstCustomers?.SelectedItem is Customer selectedCustomer)
+            {
+                DisplayCustomerDetails(selectedCustomer);
+                if (btnDeleteCustomer != null)
+                    btnDeleteCustomer.IsEnabled = true;
+            }
+            else
+            {
+                if (btnDeleteCustomer != null)
+                    btnDeleteCustomer.IsEnabled = false;
+            }
+        }
+
+        private void DisplayCustomerDetails(Customer customer)
+        {
+            if (pnlCustomerDetails == null) return;
+
+            pnlCustomerDetails.Children.Clear();
+
+            var detailsGroup = new GroupBox { Header = "📋 Ügyfél adatok", Margin = new Thickness(0, 0, 0, 15) };
+            var detailsPanel = new StackPanel();
+
+            detailsPanel.Children.Add(CreateDetailRow("Név:", customer.FullName));
+            detailsPanel.Children.Add(CreateDetailRow("Email:", customer.Email));
+            detailsPanel.Children.Add(CreateDetailRow("Cím:", $"{customer.PostalCode} {customer.City}, {customer.Address}"));
+            detailsPanel.Children.Add(CreateDetailRow("Igazolvány:", customer.IdNumber));
+            detailsPanel.Children.Add(CreateDetailRow("Létrehozva:", customer.CreatedAt.ToString("yyyy.MM.dd HH:mm")));
+
+            detailsGroup.Content = detailsPanel;
+            pnlCustomerDetails.Children.Add(detailsGroup);
+
+            LoadCustomerRentals(customer.Id);
+        }
+
+        private StackPanel CreateDetailRow(string label, string value)
+        {
+            var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 2) };
+
+            var labelBlock = new TextBlock
+            {
+                Text = label,
+                FontWeight = FontWeights.Bold,
+                Width = 100,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            var valueBlock = new TextBlock
+            {
+                Text = value,
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            panel.Children.Add(labelBlock);
+            panel.Children.Add(valueBlock);
+
+            return panel;
+        }
+
+        private async void LoadCustomerRentals(int customerId)
+        {
+            try
+            {
+                using (var context = new RentAllProContext())
+                {
+                    var customerRentals = await context.Rentals
+                        .Where(r => r.CustomerId == customerId)
+                        .OrderByDescending(r => r.CreatedAt)
+                        .ToListAsync();
+
+                    if (customerRentals.Any())
+                    {
+                        var rentalsGroup = new GroupBox { Header = "📋 Bérlési előzmények", Margin = new Thickness(0, 15, 0, 0) };
+                        var rentalsPanel = new StackPanel();
+
+                        foreach (var rental in customerRentals.Take(5))
+                        {
+                            var rentalInfo = $"#{rental.Id} - {rental.StartDate:yyyy.MM.dd} ({rental.RentalDays} nap) - {rental.TotalAmount:N0} Ft - {rental.Status}";
+                            var rentalBlock = new TextBlock
+                            {
+                                Text = rentalInfo,
+                                Margin = new Thickness(0, 2, 0, 2),
+                                FontSize = 11
+                            };
+                            rentalsPanel.Children.Add(rentalBlock);
+                        }
+
+                        if (customerRentals.Count > 5)
+                        {
+                            var moreBlock = new TextBlock
+                            {
+                                Text = $"... és még {customerRentals.Count - 5} bérlés",
+                                FontStyle = FontStyles.Italic,
+                                Foreground = Brushes.Gray,
+                                Margin = new Thickness(0, 5, 0, 0)
+                            };
+                            rentalsPanel.Children.Add(moreBlock);
+                        }
+
+                        rentalsGroup.Content = rentalsPanel;
+                        pnlCustomerDetails.Children.Add(rentalsGroup);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Hiba esetén csak nem jelenítjük meg a bérléseket
+            }
+        }
+
+        private async void BtnDeleteCustomer_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstCustomers?.SelectedItem is Customer selectedCustomer)
+            {
+                using (var context = new RentAllProContext())
+                {
+                    var activeRentals = await context.Rentals
+                        .Where(r => r.CustomerId == selectedCustomer.Id && r.Status == "Active")
+                        .CountAsync();
+
+                    if (activeRentals > 0)
+                    {
+                        MessageBox.Show(
+                            $"Az ügyfélnek {activeRentals} db aktív bérlése van!\n\nElőbb zárja le a bérléseket.",
+                            "Nem törölhető"
+                        );
+                        return;
+                    }
+                }
+
+                var result = MessageBox.Show(
+                    $"Biztosan törölni szeretné a következő ügyfelet?\n\n" +
+                    $"Név: {selectedCustomer.FullName}\n" +
+                    $"Email: {selectedCustomer.Email}\n\n" +
+                    $"FIGYELEM: Az összes bérlési előzménye is törlődik!\n" +
+                    $"Ez a művelet nem vonható vissza!",
+                    "Ügyfél törlése",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        using (var context = new RentAllProContext())
+                        {
+                            var customerRentals = await context.Rentals
+                                .Where(r => r.CustomerId == selectedCustomer.Id)
+                                .ToListAsync();
+
+                            foreach (var rental in customerRentals)
+                            {
+                                var rentalEquipments = await context.RentalEquipments
+                                    .Where(re => re.RentalId == rental.Id)
+                                    .ToListAsync();
+
+                                context.RentalEquipments.RemoveRange(rentalEquipments);
+                            }
+
+                            context.Rentals.RemoveRange(customerRentals);
+
+                            var customerToDelete = await context.Customers.FindAsync(selectedCustomer.Id);
+                            if (customerToDelete != null)
+                            {
+                                context.Customers.Remove(customerToDelete);
+                            }
+
+                            await context.SaveChangesAsync();
+                        }
+
+                        MessageBox.Show("Ügyfél és minden kapcsolódó adata sikeresen törölve!", "Siker");
+                        await LoadCustomers();
+                        await LoadRentals();
+
+                        if (pnlCustomerDetails != null)
+                        {
+                            pnlCustomerDetails.Children.Clear();
+                            pnlCustomerDetails.Children.Add(new TextBlock
+                            {
+                                Text = "Válasszon ki egy ügyfelet a részletek megtekintéséhez.",
+                                FontStyle = FontStyles.Italic,
+                                Foreground = Brushes.Gray,
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Hiba az ügyfél törlése során: {ex.Message}", "Hiba");
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Bérlések kezelése
+
+        private async Task LoadRentals()
+        {
+            try
+            {
+                using (var context = new RentAllProContext())
+                {
+                    _allRentals = await context.Rentals
+                        .Include(r => r.Customer)
+                        .OrderByDescending(r => r.CreatedAt)
+                        .ToListAsync();
+                }
+                FilterAndDisplayRentals();
+                UpdateRentalCount();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba a bérlések betöltése során: {ex.Message}", "Hiba");
+            }
+        }
+
+        private void FilterAndDisplayRentals()
+        {
+            var filteredRentals = _allRentals;
+
+            if (!string.IsNullOrWhiteSpace(txtRentalSearch?.Text) &&
+                txtRentalSearch.Text != "Keresés ügyfél név alapján...")
+            {
+                var searchTerm = txtRentalSearch.Text.ToLower();
+                filteredRentals = filteredRentals.Where(r =>
+                    r.Customer?.FullName?.ToLower().Contains(searchTerm) == true
+                ).ToList();
+            }
+
+            if (cmbRentalStatus?.SelectedItem is ComboBoxItem selectedStatus &&
+                selectedStatus.Content.ToString() != "Minden állapot")
+            {
+                var statusFilter = selectedStatus.Content.ToString();
+                filteredRentals = filteredRentals.Where(r => r.Status == statusFilter).ToList();
+            }
+
+            if (lstRentals != null)
+                lstRentals.ItemsSource = filteredRentals;
+        }
+
+        private void UpdateRentalCount()
+        {
+            if (txtRentalCount != null && _allRentals != null)
+            {
+                var activeCount = _allRentals.Count(r => r.Status == "Active");
+                var totalCount = _allRentals.Count;
+                txtRentalCount.Text = $"Bérlések száma: {totalCount} (ebből aktív: {activeCount})";
+            }
+        }
+        private async void BtnDeleteRental_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstRentals?.SelectedItem is Rental selectedRental)
+            {
+                var result = MessageBox.Show(
+                    $"Biztosan törölni szeretné a következő bérlést?\n\n" +
+                    $"Bérlés ID: {selectedRental.Id}\n" +
+                    $"Ügyfél: {selectedRental.Customer?.FullName}\n" +
+                    $"Összeg: {selectedRental.TotalAmount:N0} Ft\n\n" +
+                    $"FIGYELEM: Ez pénzügyi tranzakció törlése!\n" +
+                    $"Ez a művelet nem vonható vissza!",
+                    "Bérlés törlése",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        using (var context = new RentAllProContext())
+                        {
+                            // Kapcsolódó RentalEquipments törlése előbb
+                            var rentalEquipments = await context.RentalEquipments
+                                .Where(re => re.RentalId == selectedRental.Id)
+                                .ToListAsync();
+
+                            context.RentalEquipments.RemoveRange(rentalEquipments);
+
+                            // Bérlés törlése
+                            var rentalToDelete = await context.Rentals.FindAsync(selectedRental.Id);
+                            if (rentalToDelete != null)
+                            {
+                                context.Rentals.Remove(rentalToDelete);
+                            }
+
+                            await context.SaveChangesAsync();
+                        }
+
+                        MessageBox.Show("Bérlés sikeresen törölve!", "Siker");
+                        await LoadRentals();
+                        await LoadCustomers(); // Frissíti az ügyfél részleteket is
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Hiba a bérlés törlése során: {ex.Message}", "Hiba");
+                    }
+                }
+            }
+        }
+
+        private void TxtRentalSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterAndDisplayRentals();
+        }
+
+        private void CmbRentalStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterAndDisplayRentals();
+        }
+
+        private void LstRentals_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstRentals?.SelectedItem is Rental selectedRental)
+            {
+                if (btnDeleteRental != null)
+                    btnDeleteRental.IsEnabled = true;
+                // Itt később lehetne bérlés részleteket megjeleníteni
+            }
+            else
+            {
+                if (btnDeleteRental != null)
+                    btnDeleteRental.IsEnabled = false;
+            }
         }
 
         #endregion
