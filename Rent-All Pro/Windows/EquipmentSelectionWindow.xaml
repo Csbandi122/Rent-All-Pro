@@ -244,20 +244,21 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center">
                     <Button x:Name="btnFinalize" 
-                    Content="💾 Bérlés véglegesítése" 
-                    Style="{StaticResource PrimaryButton}"
-                    Click="BtnFinalize_Click"
-                    IsEnabled="False"/>
+        Content="💾 Bérlés véglegesítése" 
+        Style="{StaticResource PrimaryButton}"
+        Click="BtnFinalize_Click"
+        IsEnabled="False"/>
                     <Button x:Name="btnSendContract" 
-                    Content="📧 Szerződés küldése" 
-                    Style="{StaticResource SecondaryButton}"
-                    Click="BtnSendContract_Click"
-                    IsEnabled="False"/>
+        Content="📧 Szerződés küldése" 
+        Style="{StaticResource SecondaryButton}"
+        Click="BtnSendContract_Click"
+        IsEnabled="False"/>
                     <Button x:Name="btnSendInvoice" 
-                    Content="🧾 Számla küldése" 
-                    Style="{StaticResource SecondaryButton}"
-                    Click="BtnSendInvoice_Click"
-                    IsEnabled="False"/>
+        Content="🧾 Számla küldése" 
+        Style="{StaticResource SecondaryButton}"
+        Click="BtnSendInvoice_Click"
+        IsEnabled="False"/>
+
                 </StackPanel>
             </Grid>
         </Border>

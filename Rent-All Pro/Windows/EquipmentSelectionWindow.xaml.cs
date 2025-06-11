@@ -4,15 +4,13 @@ using RentAllPro.Helpers;
 using RentAllPro.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.IO;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace RentAllPro.Windows
 {

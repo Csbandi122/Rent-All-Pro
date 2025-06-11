@@ -1,12 +1,11 @@
-﻿using System;
+﻿using RentAllPro.Models;
+using RentAllPro.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using RentAllPro.Models;
-using RentAllPro.Windows; // ← új sor a using utasításokhoz
-using RentAllPro.Windows;
 
 namespace RentAllPro
 {
@@ -188,30 +187,16 @@ namespace RentAllPro
 
                 if (result == true)
                 {
-                    // Eszközök sikeresen kiválasztva
-                    var selectedEquipments = equipmentSelectionWindow.SelectedEquipments;
+                    // Bérlés sikeresen véglegesítve
+                    MessageBox.Show(
+                        "Bérlés sikeresen véglegesítve!\n\nKöszönjük a bizalmát!",
+                        "Sikeres bérlés",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
 
-                    // Bérlés véglegesítő ablak megnyitása
-                    var confirmationWindow = new RentalConfirmationWindow(_currentCustomer, _currentRental, selectedEquipments);
-                    confirmationWindow.Owner = this;
-
-                    var confirmationResult = confirmationWindow.ShowDialog();
-
-                    if (confirmationResult == true)
-                    {
-                        // Bérlés sikeresen véglegesítve
-                        MessageBox.Show(
-                            "Bérlés sikeresen véglegesítve!\n\nKöszönjük a bizalmát!",
-                            "Sikeres bérlés",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information
-                        );
-
-                        // Form visszaállítása új bérléshez
-                        InitializeData();
-                    }
-
-                    // TODO: Itt folytatódik a bérlés véglegesítése
+                    // Form visszaállítása új bérléshez
+                    InitializeData();
                 }
             }
         }
