@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using System.ComponentModel; // A ValidateForm metódushoz
 
 namespace RentAllPro
 {
@@ -196,7 +197,7 @@ namespace RentAllPro
                     );
 
                     // Form visszaállítása új bérléshez
-                    //InitializeData();
+                    InitializeData();
                 }
             }
         }
