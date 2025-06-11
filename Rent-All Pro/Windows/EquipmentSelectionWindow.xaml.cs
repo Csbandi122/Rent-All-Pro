@@ -4,13 +4,13 @@ using RentAllPro.Helpers;
 using RentAllPro.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.IO;
 
 namespace RentAllPro.Windows
 {
@@ -524,8 +524,17 @@ namespace RentAllPro.Windows
         // TODO: Ezeket a metódusokat még implementálni kell
         private async Task SaveRentalToDatabase()
         {
-            // Itt lesz az adatbázis mentés logika
-            await Task.Delay(1000); // Placeholder
+            using (var context = new RentAllProContext())
+            {
+                // Ügyfél mentése
+                context.Customers.Add(_customer);
+                await context.SaveChangesAsync();
+
+                // Bérlés mentése
+                _rental.CustomerId = _customer.Id;
+                context.Rentals.Add(_rental);
+                await context.SaveChangesAsync();
+            }
         }
 
         private async Task GenerateAndOpenContract()

@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using RentAllPro.Data;
+using RentAllPro.Helpers;
+using RentAllPro.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,15 +11,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
-using RentAllPro.Models;
-using RentAllPro.Helpers;
-using RentAllPro.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace RentAllPro.Windows
 {
-    public partial class EquipmentAdministrationWindow : Window  // ← Ez volt a probléma!
+    public partial class EquipmentAdministrationWindow : Window
     {
         private List<Equipment> _allEquipments;
         private Equipment _currentEquipment;
@@ -118,7 +118,7 @@ namespace RentAllPro.Windows
 
         private void TxtSearch_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (txtSearch.Text == "Keresés eszköz név vagy kód alapján...")
+            if (txtSearch != null && txtSearch.Text == "Keresés eszköz név vagy kód alapján...")
             {
                 txtSearch.Text = "";
                 txtSearch.FontStyle = FontStyles.Normal;
@@ -127,7 +127,7 @@ namespace RentAllPro.Windows
 
         private void TxtSearch_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            if (txtSearch != null && string.IsNullOrWhiteSpace(txtSearch.Text))
             {
                 txtSearch.Text = "Keresés eszköz név vagy kód alapján...";
                 txtSearch.FontStyle = FontStyles.Italic;
@@ -140,33 +140,38 @@ namespace RentAllPro.Windows
 
         private void LstEquipments_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (lstEquipments.SelectedItem is Equipment selectedEquipment)
+            if (lstEquipments?.SelectedItem is Equipment selectedEquipment)
             {
                 LoadEquipmentToForm(selectedEquipment);
-                btnDeleteEquipment.IsEnabled = true;
+                if (btnDeleteEquipment != null)
+                    btnDeleteEquipment.IsEnabled = true;
             }
             else
             {
-                btnDeleteEquipment.IsEnabled = false;
+                if (btnDeleteEquipment != null)
+                    btnDeleteEquipment.IsEnabled = false;
             }
         }
 
         private void LoadEquipmentToForm(Equipment equipment)
         {
+            if (equipment == null) return;
+
             _currentEquipment = equipment;
             _isEditMode = true;
             _originalImagePath = equipment.ImagePath;
 
-            txtFormTitle.Text = $"📝 Eszköz szerkesztése: {equipment.Name}";
+            if (txtFormTitle != null)
+                txtFormTitle.Text = $"📝 Eszköz szerkesztése: {equipment.Name}";
 
-            // Adatok betöltése a form mezőibe
-            txtType.Text = equipment.Type;
-            txtName.Text = equipment.Name;
-            txtCode.Text = equipment.Code;
-            txtValue.Text = equipment.Value.ToString("0");
-            txtDailyRate.Text = equipment.DailyRate.ToString("0");
-            txtNotes.Text = equipment.Notes;
-            chkIsAvailable.IsChecked = equipment.IsAvailable;
+            // Adatok betöltése a form mezőibe - null ellenőrzésekkel
+            if (txtType != null) txtType.Text = equipment.Type;
+            if (txtName != null) txtName.Text = equipment.Name;
+            if (txtCode != null) txtCode.Text = equipment.Code;
+            if (txtValue != null) txtValue.Text = equipment.Value.ToString("0");
+            if (txtDailyRate != null) txtDailyRate.Text = equipment.DailyRate.ToString("0");
+            if (txtNotes != null) txtNotes.Text = equipment.Notes;
+            if (chkIsAvailable != null) chkIsAvailable.IsChecked = equipment.IsAvailable;
 
             // Kép betöltése
             LoadEquipmentImage(equipment.ImagePath);
@@ -178,29 +183,36 @@ namespace RentAllPro.Windows
             {
                 if (!string.IsNullOrEmpty(imagePath))
                 {
-                    txtImagePath.Text = imagePath;
+                    if (txtImagePath != null)
+                        txtImagePath.Text = imagePath;
+
                     var bitmap = ImageHelper.LoadImageForDisplay(imagePath);
                     if (bitmap != null)
                     {
-                        imgPreview.Source = bitmap;
-                        txtImageInfo.Text = $"✅ Kép betöltve: {System.IO.Path.GetFileName(imagePath)}";
+                        if (imgPreview != null)
+                            imgPreview.Source = bitmap;
+                        if (txtImageInfo != null)
+                            txtImageInfo.Text = $"✅ Kép betöltve: {System.IO.Path.GetFileName(imagePath)}";
                     }
                     else
                     {
-                        imgPreview.Source = null;
-                        txtImageInfo.Text = "❌ Kép nem található vagy hibás formátum";
+                        if (imgPreview != null)
+                            imgPreview.Source = null;
+                        if (txtImageInfo != null)
+                            txtImageInfo.Text = "❌ Kép nem található vagy hibás formátum";
                     }
                 }
                 else
                 {
-                    txtImagePath.Text = "";
-                    imgPreview.Source = null;
-                    txtImageInfo.Text = "💡 Kép feltöltése: 150px magas, szélesség arányosan";
+                    if (txtImagePath != null) txtImagePath.Text = "";
+                    if (imgPreview != null) imgPreview.Source = null;
+                    if (txtImageInfo != null) txtImageInfo.Text = "💡 Kép feltöltése: 150px magas, szélesség arányosan";
                 }
             }
             catch (Exception ex)
             {
-                txtImageInfo.Text = $"❌ Hiba a kép betöltésekor: {ex.Message}";
+                if (txtImageInfo != null)
+                    txtImageInfo.Text = $"❌ Hiba a kép betöltésekor: {ex.Message}";
             }
         }
 
@@ -214,24 +226,26 @@ namespace RentAllPro.Windows
             _isEditMode = false;
             _originalImagePath = null;
 
-            txtFormTitle.Text = "📝 Új eszköz hozzáadása";
+            if (txtFormTitle != null)
+                txtFormTitle.Text = "📝 Új eszköz hozzáadása";
 
-            // Form mezők törlése
-            txtType.Text = "";
-            txtName.Text = "";
-            txtCode.Text = "";
-            txtValue.Text = "";
-            txtDailyRate.Text = "";
-            txtNotes.Text = "";
-            chkIsAvailable.IsChecked = true;
+            // Form mezők törlése - null ellenőrzésekkel
+            if (txtType != null) txtType.Text = "";
+            if (txtName != null) txtName.Text = "";
+            if (txtCode != null) txtCode.Text = "";
+            if (txtValue != null) txtValue.Text = "";
+            if (txtDailyRate != null) txtDailyRate.Text = "";
+            if (txtNotes != null) txtNotes.Text = "";
+            if (chkIsAvailable != null) chkIsAvailable.IsChecked = true;
 
             // Kép törlése
-            txtImagePath.Text = "";
-            imgPreview.Source = null;
-            txtImageInfo.Text = "💡 Kép feltöltése: 150px magas, szélesség arányosan";
+            if (txtImagePath != null) txtImagePath.Text = "";
+            if (imgPreview != null) imgPreview.Source = null;
+            if (txtImageInfo != null) txtImageInfo.Text = "💡 Kép feltöltése: 150px magas, szélesség arányosan";
 
             // Lista kijelölés törlése
-            lstEquipments.SelectedItem = null;
+            if (lstEquipments != null)
+                lstEquipments.SelectedItem = null;
         }
 
         #endregion
@@ -249,32 +263,32 @@ namespace RentAllPro.Windows
         {
             var errors = new List<string>();
 
-            // Kötelező mezők ellenőrzése
-            if (string.IsNullOrWhiteSpace(txtType.Text))
+            // Kötelező mezők ellenőrzése - null ellenőrzésekkel
+            if (txtType == null || string.IsNullOrWhiteSpace(txtType.Text))
                 errors.Add("• Eszköz típusa kötelező");
 
-            if (string.IsNullOrWhiteSpace(txtName.Text))
+            if (txtName == null || string.IsNullOrWhiteSpace(txtName.Text))
                 errors.Add("• Eszköz neve kötelező");
 
-            if (string.IsNullOrWhiteSpace(txtCode.Text))
+            if (txtCode == null || string.IsNullOrWhiteSpace(txtCode.Text))
                 errors.Add("• Eszköz kódja kötelező");
 
             // Eszköz kód egyediségének ellenőrzése
-            if (!string.IsNullOrWhiteSpace(txtCode.Text))
+            if (txtCode != null && !string.IsNullOrWhiteSpace(txtCode.Text) && _allEquipments != null)
             {
                 var codeExists = _allEquipments.Any(e =>
                     e.Code.Equals(txtCode.Text.Trim(), StringComparison.OrdinalIgnoreCase) &&
-                    e.Id != _currentEquipment.Id);
+                    e.Id != _currentEquipment?.Id);
 
                 if (codeExists)
                     errors.Add("• Ez az eszköz kód már létezik");
             }
 
             // Pénzügyi adatok ellenőrzése
-            if (!decimal.TryParse(txtValue.Text.Replace(',', '.'), out decimal value) || value <= 0)
+            if (txtValue == null || !decimal.TryParse(txtValue.Text.Replace(',', '.'), out decimal value) || value <= 0)
                 errors.Add("• Eszköz értéke érvényes pozitív szám kell legyen");
 
-            if (!decimal.TryParse(txtDailyRate.Text.Replace(',', '.'), out decimal dailyRate) || dailyRate <= 0)
+            if (txtDailyRate == null || !decimal.TryParse(txtDailyRate.Text.Replace(',', '.'), out decimal dailyRate) || dailyRate <= 0)
                 errors.Add("• Bérlési díj érvényes pozitív szám kell legyen");
 
             if (errors.Any())
@@ -312,9 +326,12 @@ namespace RentAllPro.Windows
                     var bitmap = ImageHelper.LoadImageForDisplay(openFileDialog.FileName);
                     if (bitmap != null)
                     {
-                        imgPreview.Source = bitmap;
-                        txtImagePath.Text = openFileDialog.FileName;
-                        txtImageInfo.Text = $"✅ Kép kiválasztva: {System.IO.Path.GetFileName(openFileDialog.FileName)}";
+                        if (imgPreview != null)
+                            imgPreview.Source = bitmap;
+                        if (txtImagePath != null)
+                            txtImagePath.Text = openFileDialog.FileName;
+                        if (txtImageInfo != null)
+                            txtImageInfo.Text = $"✅ Kép kiválasztva: {System.IO.Path.GetFileName(openFileDialog.FileName)}";
                     }
                     else
                     {
@@ -340,9 +357,9 @@ namespace RentAllPro.Windows
 
         private void BtnRemoveImage_Click(object sender, RoutedEventArgs e)
         {
-            txtImagePath.Text = "";
-            imgPreview.Source = null;
-            txtImageInfo.Text = "💡 Kép feltöltése: 150px magas, szélesség arányosan";
+            if (txtImagePath != null) txtImagePath.Text = "";
+            if (imgPreview != null) imgPreview.Source = null;
+            if (txtImageInfo != null) txtImageInfo.Text = "💡 Kép feltöltése: 150px magas, szélesség arányosan";
         }
 
         #endregion
@@ -356,7 +373,7 @@ namespace RentAllPro.Windows
 
         private async void BtnDeleteEquipment_Click(object sender, RoutedEventArgs e)
         {
-            if (lstEquipments.SelectedItem is Equipment selectedEquipment)
+            if (lstEquipments?.SelectedItem is Equipment selectedEquipment)
             {
                 var result = MessageBox.Show(
                     $"Biztosan törölni szeretné a következő eszközt?\n\n" +
@@ -377,10 +394,17 @@ namespace RentAllPro.Windows
                             var equipmentToDelete = await context.Equipments.FindAsync(selectedEquipment.Id);
                             if (equipmentToDelete != null)
                             {
-                                // Kép törlése a fájlrendszerből
+                                // Kép törlése a fájlrendszerből - null ellenőrzéssel és hibakezeléssel
                                 if (!string.IsNullOrEmpty(equipmentToDelete.ImagePath))
                                 {
-                                    ImageHelper.DeleteEquipmentImage(equipmentToDelete.ImagePath);
+                                    try
+                                    {
+                                        ImageHelper.DeleteEquipmentImage(equipmentToDelete.ImagePath);
+                                    }
+                                    catch
+                                    {
+                                        // Ha nem sikerül törölni a képet, folytatjuk
+                                    }
                                 }
 
                                 context.Equipments.Remove(equipmentToDelete);
@@ -421,32 +445,51 @@ namespace RentAllPro.Windows
                 // Form adatok összegyűjtése
                 var equipment = _isEditMode ? _currentEquipment : new Equipment();
 
-                equipment.Type = txtType.Text.Trim();
-                equipment.Name = txtName.Text.Trim();
-                equipment.Code = txtCode.Text.Trim();
-                equipment.Value = decimal.Parse(txtValue.Text.Replace(',', '.'));
-                equipment.DailyRate = decimal.Parse(txtDailyRate.Text.Replace(',', '.'));
-                equipment.Notes = txtNotes.Text.Trim();
-                equipment.IsAvailable = chkIsAvailable.IsChecked ?? true;
+                if (equipment == null)
+                    equipment = new Equipment();
+
+                // Null ellenőrzések a form mezőknél
+                equipment.Type = txtType?.Text.Trim() ?? "";
+                equipment.Name = txtName?.Text.Trim() ?? "";
+                equipment.Code = txtCode?.Text.Trim() ?? "";
+                equipment.Value = decimal.Parse(txtValue?.Text.Replace(',', '.') ?? "0");
+                equipment.DailyRate = decimal.Parse(txtDailyRate?.Text.Replace(',', '.') ?? "0");
+                equipment.Notes = txtNotes?.Text.Trim() ?? "";
+                equipment.IsAvailable = chkIsAvailable?.IsChecked ?? true;
 
                 // Kép kezelése
-                if (!string.IsNullOrEmpty(txtImagePath.Text) && txtImagePath.Text != _originalImagePath)
+                var currentImagePath = txtImagePath?.Text ?? "";
+                if (!string.IsNullOrEmpty(currentImagePath) && currentImagePath != _originalImagePath)
                 {
                     // Új kép mentése
-                    var savedImagePath = ImageHelper.SaveEquipmentImage(txtImagePath.Text, equipment.Code);
+                    var savedImagePath = ImageHelper.SaveEquipmentImage(currentImagePath, equipment.Code);
 
                     // Régi kép törlése (ha volt és szerkesztés módban vagyunk)
                     if (_isEditMode && !string.IsNullOrEmpty(_originalImagePath))
                     {
-                        ImageHelper.DeleteEquipmentImage(_originalImagePath);
+                        try
+                        {
+                            ImageHelper.DeleteEquipmentImage(_originalImagePath);
+                        }
+                        catch
+                        {
+                            // Ha nem sikerül törölni, folytatjuk
+                        }
                     }
 
                     equipment.ImagePath = savedImagePath;
                 }
-                else if (string.IsNullOrEmpty(txtImagePath.Text) && _isEditMode && !string.IsNullOrEmpty(_originalImagePath))
+                else if (string.IsNullOrEmpty(currentImagePath) && _isEditMode && !string.IsNullOrEmpty(_originalImagePath))
                 {
                     // Kép eltávolítása
-                    ImageHelper.DeleteEquipmentImage(_originalImagePath);
+                    try
+                    {
+                        ImageHelper.DeleteEquipmentImage(_originalImagePath);
+                    }
+                    catch
+                    {
+                        // Ha nem sikerül törölni, folytatjuk
+                    }
                     equipment.ImagePath = null;
                 }
 

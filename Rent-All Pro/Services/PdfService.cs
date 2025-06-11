@@ -1,24 +1,24 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using RentAllPro.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Tasks = System.Threading.Tasks;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
+using System.Threading.Tasks;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
-using RentAllPro.Models;
 
 namespace RentAllPro.Services
 {
     public class PdfService
     {
-        public async Tasks.Task<PdfResult> GenerateContractPdfAsync(
+        public async Task<PdfResult> GenerateContractPdfAsync(
             Customer customer,
             Rental rental,
             List<Equipment> selectedEquipments,
             string outputPath)
         {
-            return await Tasks.Task.Run(() => GenerateContractWord(customer, rental, selectedEquipments, outputPath));
+            return await Task.Run(() => GenerateContractWord(customer, rental, selectedEquipments, outputPath));
         }
 
         private PdfResult GenerateContractWord(

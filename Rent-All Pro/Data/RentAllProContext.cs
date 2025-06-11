@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RentAllPro.Models;
+using System;
 using System.IO;
 
 namespace RentAllPro.Data
@@ -10,6 +10,7 @@ namespace RentAllPro.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Rental> Rentals { get; set; }
         public DbSet<Equipment> Equipments { get; set; } // ← Új Equipment DbSet
+        public DbSet<RentalEquipment> RentalEquipments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

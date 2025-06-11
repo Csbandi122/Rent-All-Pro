@@ -202,13 +202,16 @@ namespace RentAllPro
         }
         public void UpdateHeaderTitle()
         {
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.CompanyName))
+            if (txtHeaderTitle != null)
             {
-                txtHeaderTitle.Text = Properties.Settings.Default.CompanyName;
-            }
-            else
-            {
-                txtHeaderTitle.Text = "Eszközbérlés támogatás";
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.CompanyName))
+                {
+                    txtHeaderTitle.Text = Properties.Settings.Default.CompanyName;
+                }
+                else
+                {
+                    txtHeaderTitle.Text = "Eszközbérlés támogatás";
+                }
             }
         }
         private void BtnCancel_Click(object sender, RoutedEventArgs e)

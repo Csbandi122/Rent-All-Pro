@@ -250,19 +250,21 @@ namespace RentAllPro.Services
                     return string.Empty;
 
                 byte[] data = Convert.FromBase64String(encryptedPassword);
-                return System.Text.Encoding.UTF8.GetString(data);
+                byte[] decrypted = System.Security.Cryptography.ProtectedData.Unprotect(
+                    data, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                return System.Text.Encoding.UTF8.GetString(decrypted);
             }
             catch
             {
                 return encryptedPassword;
             }
         }
-    }
 
-    public class EmailResult
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public string ErrorMessage { get; set; } = string.Empty;
+        public class EmailResult
+        {
+            public bool Success { get; set; }
+            public string Message { get; set; } = string.Empty;
+            public string ErrorMessage { get; set; } = string.Empty;
+        }
     }
 }

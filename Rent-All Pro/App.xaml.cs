@@ -1,6 +1,6 @@
-﻿using System;
+﻿using RentAllPro.Data;
+using System;
 using System.Windows;
-using RentAllPro.Data;
 
 namespace RentAllPro
 {

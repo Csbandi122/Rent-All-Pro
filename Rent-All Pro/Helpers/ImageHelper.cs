@@ -25,15 +25,16 @@ namespace RentAllPro.Helpers
                 string newFileName = $"{equipmentCode}_{timestamp}{extension}";
                 string destinationPath = Path.Combine(PHOTOS_FOLDER, newFileName);
 
+              
                 // Kép betöltése és átméretezése
                 using (var originalImage = new Bitmap(sourceImagePath))
                 {
-                    var resizedImage = ResizeImage(originalImage, TARGET_HEIGHT, MAX_WIDTH);
-
-                    // Kép mentése
-                    ImageFormat format = GetImageFormat(extension);
-                    resizedImage.Save(destinationPath, format);
-                    resizedImage.Dispose();
+                    using (var resizedImage = ResizeImage(originalImage, TARGET_HEIGHT, MAX_WIDTH))
+                    {
+                        // Kép mentése
+                        ImageFormat format = GetImageFormat(extension);
+                        resizedImage.Save(destinationPath, format);
+                    }
                 }
 
                 // Relatív elérési út visszaadása
@@ -86,7 +87,16 @@ namespace RentAllPro.Helpers
         {
             try
             {
-                if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
+                if (string.IsNullOrEmpty(imagePath))
+                    return null;
+
+                // Ha relatív útvonal, alakítsuk teljes útvonallá
+                if (!Path.IsPathRooted(imagePath))
+                {
+                    imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, imagePath);
+                }
+
+                if (!File.Exists(imagePath))
                     return null;
 
                 var bitmap = new BitmapImage();
@@ -108,9 +118,18 @@ namespace RentAllPro.Helpers
         {
             try
             {
-                if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                if (!string.IsNullOrEmpty(imagePath))
                 {
-                    File.Delete(imagePath);
+                    // Ha relatív útvonal, alakítsuk teljes útvonallá
+                    if (!Path.IsPathRooted(imagePath))
+                    {
+                        imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, imagePath);
+                    }
+
+                    if (File.Exists(imagePath))
+                    {
+                        File.Delete(imagePath);
+                    }
                 }
             }
             catch

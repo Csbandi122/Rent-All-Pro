@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using RentAllPro.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Win32;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using RentAllPro.Services;
 
 namespace RentAllPro
 {
@@ -128,13 +127,14 @@ namespace RentAllPro
         {
             try
             {
-                // Egyszerű Base64 kódolás (valós alkalmazásban erősebb titkosítást használj!)
                 byte[] data = System.Text.Encoding.UTF8.GetBytes(password);
-                return Convert.ToBase64String(data);
+                byte[] encrypted = System.Security.Cryptography.ProtectedData.Protect(
+                    data, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                return Convert.ToBase64String(encrypted);
             }
             catch
             {
-                return password; // Ha hiba van, eredeti jelszót adjuk vissza
+                return password;
             }
         }
 
@@ -142,15 +142,20 @@ namespace RentAllPro
         {
             try
             {
-                // Base64 dekódolás
+                if (string.IsNullOrEmpty(encryptedPassword))
+                    return string.Empty;
+
                 byte[] data = Convert.FromBase64String(encryptedPassword);
-                return System.Text.Encoding.UTF8.GetString(data);
+                byte[] decrypted = System.Security.Cryptography.ProtectedData.Unprotect(
+                    data, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                return System.Text.Encoding.UTF8.GetString(decrypted);
             }
             catch
             {
-                return encryptedPassword; // Ha hiba van, eredeti stringet adjuk vissza
+                return encryptedPassword;
             }
         }
+
 
         #endregion
 
